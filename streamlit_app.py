@@ -4,5 +4,5 @@ import pandas as pd
 import plotly.express as px
 
 
-pg = st.navigation([st.Page("pages\map.py",title='Kill me',), st.Page("pages\graphing.py"), st.Page("pages\PCA.py")])
+pg = st.navigation([st.Page("sections\map.py",title='Kill me'), st.Page("sections\graphing.py"), st.Page("sections\PCA.py")])
 pg.run()
