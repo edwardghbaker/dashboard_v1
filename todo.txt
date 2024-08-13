@@ -1,0 +1,9 @@
+To Do
+
+1. Add timedate column to the reshape data files.
+2. Add most recent data to the locations df, normalised to 10. 
+3. Authentification screen 
+4. Add in the PCA stuff, add recreated files and ability to download the files after. 
+5. Front page with some random KP information, logo etc. 
+6. Add project location as a star to the map as a default. 
+
