@@ -22,8 +22,8 @@ if data_type == 'Surface Water':
 elif data_type == 'Ground Water':
     data = gwq
 
-x_element = col2.selectbox('Select the x-axis element:', data.columns)
 y_element = col2.selectbox('Select the y-axis element:', data.columns)
+x_element = col2.selectbox('Select the x-axis element:', data.columns)
 
 col1.plotly_chart(px.scatter(data, x=x_element, y=y_element, title=f'{data_type} Quality'))
 # %%
