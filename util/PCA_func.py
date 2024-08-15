@@ -43,6 +43,7 @@ def perform_pca(df,
 
     # Recreate the original DataFrame
     X_recreated = pca.inverse_transform(principal_components)
+    X_recreated = pd.DataFrame(data=X_recreated, columns=components)
 
     if plot:
         # Plot the explained variance
@@ -56,9 +57,12 @@ def perform_pca(df,
 
 if __name__ == '__main__':
     # Test the function
-    df = pd.read_csv(r'data\1_AG_SUP_Hidroquimica.csv')
+    import os
+    gwq_file = os.getcwd().split('dashboard_v1')[0]+'dashboard_v1\\data\\gwq.pkl'
+    df = pd.read_pickle(gwq_file)
     components = df.select_dtypes(include=['number']).columns[1:]
     perform_pca(df, components).show()
+    principal_df, vectors, X_recreated=perform_pca(df, components, plot=False)
     print('Principal components calculated successfully.')
 
 #%%

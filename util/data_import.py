@@ -30,8 +30,7 @@ def data_to_pkl(data_file, df_out=False):
         data.to_pickle(data_file.replace('.xls', '.pkl'))
 
 def locations_to_pkl(loc_file: str,
-                     data_files: list = [r'C:\Users\User\Documents\GitHub\dashboard_v1\data\swq.xls',
-                                         r'C:\Users\User\Documents\GitHub\dashboard_v1\data\gwq.xls']):
+                     data_files: list):
     df = pd.read_excel(loc_file,header=1)
     df[['UTM Easting','UTM Northing']] = df[['UTM Easting','UTM Northing']].map(lambda x: float(x.replace('E', '').replace('N','')))
     df = df[df['UTM Easting'] != 0]
@@ -61,11 +60,17 @@ def locations_to_pkl(loc_file: str,
 # %%
 
 if __name__ == '__main__':
-    gwq = r'C:\Users\User\Documents\GitHub\dashboard_v1\data\gwq.xls'
-    swq = r'C:\Users\User\Documents\GitHub\dashboard_v1\data\swq.xls'
+    import os
+
+    gwq = os.getcwd().split('dashboard_v1')[0]+'dashboard_v1\\data\\gwq.xls'
+    swq = os.getcwd().split('dashboard_v1')[0]+'dashboard_v1\\data\\swq.xls'
+
     data_to_pkl(gwq)
     data_to_pkl(swq)
-    location_data = r'..\data\locations.xlsx'
-    locations_to_pkl(location_data)
+
+    location_data = os.getcwd().split('dashboard_v1')[0]+'dashboard_v1\\data\\locations.xlsx'
+
+    locations_to_pkl(location_data,
+                     data_files=[gwq,swq])
     
 # %%
