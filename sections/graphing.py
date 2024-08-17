@@ -32,6 +32,9 @@ data = data[(data['Date'] >= pd.to_datetime(start_date)) & (data['Date'] <= pd.t
 y_element = col2.selectbox('Select the y-axis element:', data.columns)
 x_element = col2.selectbox('Select the x-axis element:', data.columns)
 
+color_by = col2.selectbox('Select the color element:', data.columns)
+color_map = col2.selectbox('Select the color map:', px.colors.named_colorscales())
+size_by = col2.selectbox('Select the size element:', data.columns)
 
-col1.plotly_chart(px.scatter(data, x=x_element, y=y_element, title=f'{data_type} Quality'))
+col1.plotly_chart(px.scatter(data, x=x_element, y=y_element, color=color_by, size=size_by, color_continuous_scale=color_map), use_container_width=True)
 # %%

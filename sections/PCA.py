@@ -22,18 +22,15 @@ elif dataset == 'Surface Water Quality':
 elif dataset == 'Both':
     df = pd.concat([gwq, swq], axis=0)
 
-
-['Total Dissolved Solids','Sulphate (Dissolved)','Redox Potential','Nitrate+Nitrite (Dissolved)','Magnesium (Dissolved)','Iron (Dissolved)', 'Hardness (Dissolved)''Copper (Dissolved)''Alkalinity, Carbonate as CaCO3''Arsenic (Dissolved)']
-
 if df is not None:
     components = st.multiselect('Select the columns to be used as principal components', ['All','Majors','Dissolved']+df.columns, default=['Dissolved'])
 
     if 'All' in components:
         components = df.columns
     elif 'Majors' in components:
-        components = list(set(['Total Dissolved Solids','Sulphate (Dissolved)','Redox Potential','Nitrate+Nitrite (Dissolved)','Magnesium (Dissolved)','Iron (Dissolved)', 'Hardness (Dissolved)','Copper (Dissolved)','Alkalinity, Carbonate as CaCO3','Arsenic (Dissolved)']+df.columns))
+        components = list(set(['Total Dissolved Solids','Sulphate (Dissolved)','Redox Potential','Nitrate+Nitrite (Dissolved)','Magnesium (Dissolved)','Iron (Dissolved)', 'Hardness (Dissolved)','Copper (Dissolved)','Alkalinity, Carbonate as CaCO3','Arsenic (Dissolved)']+list(df.columns)))
     elif 'Dissolved' in components:
-        components = list(set([i for i in df.columns if '(Dissolved)' in i]+df.columns))
+        components = list(set([i for i in df.columns if '(Dissolved)' in i]+list(df.columns)))
 
     num_pcs = st.number_input('Select the number of Principal Components to be calculated', min_value=1, max_value=len(components), value=3, step=1)
     pcs = st.multiselect('Select Principal Components to be plotted', [i for i in range(1, num_pcs+1)])
