@@ -97,7 +97,6 @@ view_state = pdk.ViewState(
 )
 layers_to_plot = [site_location, geojson_layer]
 
-
 if surface_data:
     layers_to_plot.append(surface_layer)
 if ground_data:
@@ -108,5 +107,5 @@ if values_for_column_plot:
     layers_to_plot.append(barplot_layer)
 
 # Render the deck.gl map with the GeoJSON layer
-col1.pydeck_chart(pdk.Deck(layers=layers_to_plot, initial_view_state=view_state))
+col1.pydeck_chart(pdk.Deck(layers=layers_to_plot, initial_view_state=view_state, map_style='road'))
 
