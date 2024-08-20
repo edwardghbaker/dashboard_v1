@@ -46,38 +46,39 @@ site_location = pdk.Layer(
     get_radius=500,
     marker='star',
 )
-
 surface_layer = pdk.Layer(
     'ScatterplotLayer',
     data=location_df[location_df['Type'].str.contains('Surface')],
     get_position='[lon, lat]',
     get_color='[200, 30, 0, 160]',
-    get_radius=200,
+    get_radius=100,
 )
 ground_layer = pdk.Layer(
     'ScatterplotLayer',
     data=location_df[location_df['Type'].str.contains('Ground')],
     get_position='[lon, lat]',
     get_color='[30, 200, 0, 160]',
-    get_radius=200,
+    get_radius=100,
 )
 
 if names_on_map:
-
+    df_names = pd.DataFrame()
+    if surface_data:
+        df_names = pd.concat([df_names, location_df[location_df['Type'].str.contains('Surface')]])
+    if ground_data:
+        df_names = pd.concat([df_names, location_df[location_df['Type'].str.contains('Ground')]])
+        
     name_layer = pdk.Layer(
         'TextLayer',
-        data=location_df,
+        data=df_names,
         get_position='[lon, lat]',
         get_text='Name',
         get_size=20,
         get_color='[0, 0, 0, 255]',
         get_angle=0,
-        get_text_anchor='middle',
-        get_alignment_baseline='center',
     )
 
 if values_for_column_plot:
-
     barplot_layer = pdk.Layer(
         'ColumnLayer',
         data=location_df,
@@ -109,15 +110,3 @@ if values_for_column_plot:
 # Render the deck.gl map with the GeoJSON layer
 col1.pydeck_chart(pdk.Deck(layers=layers_to_plot, initial_view_state=view_state))
 
-
-
-
-
-
-
-# if surface_data and ground_data:
-#     col1.map(location_df[location_df['Type'].str.contains('Surface|Ground')], latitude='lat', longitude='lon', use_container_width=True, zoom=7)
-# elif surface_data:
-#     col1.map(location_df[location_df['Type'].str.contains('Surface')], latitude='lat', longitude='lon', use_container_width=True, zoom=7)
-# elif ground_data:
-#     col1.map(location_df[location_df['Type'].str.contains('Ground')], latitude='lat', longitude='lon', use_container_width=True, zoom=7)
