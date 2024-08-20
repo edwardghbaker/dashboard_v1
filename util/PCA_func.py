@@ -23,9 +23,14 @@ def perform_pca(df,
     """
     # Select the columns to be used as principal components
     X = df[components]
+    #Only select the columns that are numeric
+    X = X.select_dtypes(include=['number'])
+    
     if interpolation == 'mean':
         X = X.fillna(X.mean())  # Fill missing values with the mean of the column
-    
+    X = X.dropna()  # Drop rows with missing values
+    components = X.columns
+
     ss = StandardScaler().fit(X)
 
     if scale:

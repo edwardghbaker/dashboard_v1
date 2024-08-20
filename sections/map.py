@@ -8,6 +8,9 @@ import pydeck as pdk
 location_df = pd.read_pickle(os.getcwd().split('dashboard_v1')[0]+'dashboard_v1\\data\\locations.pkl')
 location_df.drop(10, inplace=True)
 
+numeric_df = location_df.select_dtypes(include=['number'])
+numeric_df_norm = 1000*(numeric_df-numeric_df.min())/(numeric_df.max()-numeric_df.min())
+numeric_df_norm.columns = [s.replace(' ','') for s in numeric_df.columns]
 project_data = pd.DataFrame(columns=['lat', 'lon'],
                             data=[[-28.4359, -69.5486]])
 
@@ -22,8 +25,9 @@ surface_data = col2.checkbox('Surface Water Data', value=True)
 ground_data = col2.checkbox('Ground Water Data', value=True)
 col2.subheader('Settings')
 names_on_map = col2.checkbox('Show Names', value=False)
-values_for_column_plot = col2.selectbox('Select the column for the column plot', [None]+list(location_df.columns))
-
+values_for_column_plot = col2.selectbox('Select the column for the column plot', [None]+list(numeric_df.columns))
+if type(values_for_column_plot) == str:
+    values_for_column_plot = values_for_column_plot.replace(' ','')
 # Define a GeoJSON layer
 geojson_layer = pdk.Layer(
     'GeoJsonLayer',
@@ -81,7 +85,7 @@ if names_on_map:
 if values_for_column_plot:
     barplot_layer = pdk.Layer(
         'ColumnLayer',
-        data=location_df,
+        data=numeric_df_norm,
         get_position='[lon, lat]',
         get_elevation=values_for_column_plot,
         get_color='[200, 30, 0, 160]',

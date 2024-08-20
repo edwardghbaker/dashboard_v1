@@ -1,3 +1,4 @@
+#%%
 import streamlit as st
 st.set_page_config(layout="wide")
 from util.PCA_func import perform_pca
@@ -23,7 +24,7 @@ elif dataset == 'Both':
     df = pd.concat([gwq, swq], axis=0)
 
 if df is not None:
-    components = st.multiselect('Select the columns to be used as principal components', ['All','Majors','Dissolved']+df.columns, default=['Dissolved'])
+    components = st.multiselect('Select the columns to be used as principal components', ['All','Majors','Dissolved']+list(df.columns), default=['Dissolved'])
 
     if 'All' in components:
         components = df.columns
@@ -47,3 +48,5 @@ if df is not None:
 
 
 
+
+# %%
