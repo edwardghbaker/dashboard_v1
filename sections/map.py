@@ -2,8 +2,10 @@
 import streamlit as st
 st.set_page_config(layout="wide")
 import pandas as pd
+import geopandas as gpd
 import os
 import pydeck as pdk
+import json
 
 location_df = pd.read_pickle(os.getcwd().split('dashboard_v1')[0]+'dashboard_v1\\data\\locations.pkl')
 location_df.drop(10, inplace=True)
@@ -14,7 +16,9 @@ numeric_df_norm.columns = [s.replace(' ','') for s in numeric_df.columns]
 project_data = pd.DataFrame(columns=['lat', 'lon'],
                             data=[[-28.4359, -69.5486]])
 
-GA_Path = os.getcwd().split('dashboard_v1')[0]+'dashboard_v1\\data\\GA.geojson'
+GA_Path = os.getcwd().split('dashboard_v1')[0]+'dashboard_v1\\data\\sample.json'
+with open(GA_Path) as f:
+    GA_data = json.load(f)
 
 st.header('Map of the Locations')
 
@@ -31,14 +35,14 @@ if type(values_for_column_plot) == str:
 # Define a GeoJSON layer
 geojson_layer = pdk.Layer(
     'GeoJsonLayer',
-    data=GA_Path,
+    data=GA_data,#'https://raw.githubusercontent.com/visgl/deck.gl-data/master/examples/geojson/vancouver-blocks.json',#GA,
     pickable=True,
     stroked=False,
     filled=True,
     extruded=True,
     get_fill_color='[255, 255, 255, 200]',
     get_line_color=[255, 255, 255],
-    get_radius=200,
+    get_radius=2000,
 )
 
 # Define scatter layers 
@@ -71,7 +75,7 @@ if names_on_map:
         df_names = pd.concat([df_names, location_df[location_df['Type'].str.contains('Surface')]])
     if ground_data:
         df_names = pd.concat([df_names, location_df[location_df['Type'].str.contains('Ground')]])
-        
+
     name_layer = pdk.Layer(
         'TextLayer',
         data=df_names,
@@ -111,5 +115,5 @@ if values_for_column_plot:
     layers_to_plot.append(barplot_layer)
 
 # Render the deck.gl map with the GeoJSON layer
-col1.pydeck_chart(pdk.Deck(layers=layers_to_plot, initial_view_state=view_state, map_style='road'))
+col1.pydeck_chart(pdk.Deck(layers=layers_to_plot))#, initial_view_state=view_state, map_style='road'))
 
