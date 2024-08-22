@@ -16,44 +16,50 @@ numeric_df_norm.columns = [s.replace(' ','') for s in numeric_df.columns]
 project_data = pd.DataFrame(columns=['lat', 'lon'],
                             data=[[-28.4359, -69.5486]])
 
-GA_Path = os.getcwd().split('dashboard_v1')[0]+'dashboard_v1\\data\\sample.json'
+GA_Path = os.getcwd().split('dashboard_v1')[0]+'dashboard_v1\\data\\GA_2d.json'
 with open(GA_Path) as f:
     GA_data = json.load(f)
 
 st.header('Map of the Locations')
-
 col1, col2 = st.columns([3, 1])
 
 col2.subheader('Layers')
 surface_data = col2.checkbox('Surface Water Data', value=True)
 ground_data = col2.checkbox('Ground Water Data', value=True)
+
 col2.subheader('Settings')
 names_on_map = col2.checkbox('Show Names', value=False)
 values_for_column_plot = col2.selectbox('Select the column for the column plot', [None]+list(numeric_df.columns))
+
 if type(values_for_column_plot) == str:
     values_for_column_plot = values_for_column_plot.replace(' ','')
+
 # Define a GeoJSON layer
 geojson_layer = pdk.Layer(
     'GeoJsonLayer',
-    data=GA_data,#'https://raw.githubusercontent.com/visgl/deck.gl-data/master/examples/geojson/vancouver-blocks.json',#GA,
+    data=GA_data,
     pickable=True,
     stroked=False,
     filled=True,
-    extruded=True,
-    get_fill_color='[255, 255, 255, 200]',
-    get_line_color=[255, 255, 255],
-    get_radius=2000,
+    extruded=False,
+    get_fill_color='[0, 0, 0, 200]',
+    get_line_color=[255, 0, 0],
+    get_radius=100,
+    opacity=1,
+    get_elevation=0,
+    get_line_width=1000
 )
 
 # Define scatter layers 
-site_location = pdk.Layer(
-    'ScatterplotLayer',
-    data=project_data,
-    get_position='[lon, lat]',
-    get_color='[0, 0, 255, 160]',
-    get_radius=500,
-    marker='star',
-)
+# site_location = pdk.Layer(
+#     'ScatterplotLayer',
+#     data=project_data,
+#     get_position='[lon, lat]',
+#     get_color='[255, 0, 0, 160]',
+#     get_radius=500,
+#     marker='triangle',
+# )
+
 surface_layer = pdk.Layer(
     'ScatterplotLayer',
     data=location_df[location_df['Type'].str.contains('Surface')],
@@ -103,7 +109,7 @@ view_state = pdk.ViewState(
     zoom=10,
     pitch=50,
 )
-layers_to_plot = [site_location, geojson_layer]
+layers_to_plot = [geojson_layer]
 
 if surface_data:
     layers_to_plot.append(surface_layer)
@@ -115,5 +121,7 @@ if values_for_column_plot:
     layers_to_plot.append(barplot_layer)
 
 # Render the deck.gl map with the GeoJSON layer
-col1.pydeck_chart(pdk.Deck(layers=layers_to_plot))#, initial_view_state=view_state, map_style='road'))
+col1.pydeck_chart(pdk.Deck(layers=layers_to_plot, initial_view_state=view_state, map_style='light'))
 
+
+# %%
