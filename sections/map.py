@@ -12,7 +12,10 @@ location_df.drop(10, inplace=True)
 
 numeric_df = location_df.select_dtypes(include=['number'])
 numeric_df_norm = 1000*(numeric_df-numeric_df.min())/(numeric_df.max()-numeric_df.min())
-numeric_df_norm.columns = [s.replace(' ','') for s in numeric_df.columns]
+numeric_df_norm = numeric_df_norm.fillna(0)
+numeric_df_norm['lat'] = location_df['lat']
+numeric_df_norm['lon'] = location_df['lon']
+
 project_data = pd.DataFrame(columns=['lat', 'lon'],
                             data=[[-28.4359, -69.5486]])
 
@@ -29,10 +32,7 @@ ground_data = col2.checkbox('Ground Water Data', value=True)
 
 col2.subheader('Settings')
 names_on_map = col2.checkbox('Show Names', value=False)
-values_for_column_plot = col2.selectbox('Select the column for the column plot', [None]+list(numeric_df.columns))
-
-if type(values_for_column_plot) == str:
-    values_for_column_plot = values_for_column_plot.replace(' ','')
+values_for_column_plot = col2.selectbox('Select the column for the column plot', [None]+list(numeric_df_norm.columns))
 
 # Define a GeoJSON layer
 geojson_layer = pdk.Layer(
@@ -49,16 +49,6 @@ geojson_layer = pdk.Layer(
     get_elevation=0,
     get_line_width=1000
 )
-
-# Define scatter layers 
-# site_location = pdk.Layer(
-#     'ScatterplotLayer',
-#     data=project_data,
-#     get_position='[lon, lat]',
-#     get_color='[255, 0, 0, 160]',
-#     get_radius=500,
-#     marker='triangle',
-# )
 
 surface_layer = pdk.Layer(
     'ScatterplotLayer',
@@ -87,19 +77,23 @@ if names_on_map:
         data=df_names,
         get_position='[lon, lat]',
         get_text='Name',
-        get_size=20,
+        get_size=12,
         get_color='[0, 0, 0, 255]',
         get_angle=0,
     )
 
 if values_for_column_plot:
+    column_df = numeric_df_norm[['lat', 'lon', values_for_column_plot]]
+    column_df.columns = ['lat', 'lon', 'value']
+    
     barplot_layer = pdk.Layer(
         'ColumnLayer',
-        data=numeric_df_norm,
+        data=column_df,
         get_position='[lon, lat]',
-        get_elevation=values_for_column_plot,
-        get_color='[200, 30, 0, 160]',
-        get_radius=200,
+        get_elevation='value',
+        get_color='[100, 200, 200, 255]',
+        radius=100,
+        pickable=True,
     )
 
 # Define the view state
@@ -122,6 +116,5 @@ if values_for_column_plot:
 
 # Render the deck.gl map with the GeoJSON layer
 col1.pydeck_chart(pdk.Deck(layers=layers_to_plot, initial_view_state=view_state, map_style='light'))
-
 
 # %%
