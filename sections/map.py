@@ -19,9 +19,13 @@ numeric_df_norm['lon'] = location_df['lon']
 project_data = pd.DataFrame(columns=['lat', 'lon'],
                             data=[[-28.4359, -69.5486]])
 
-GA_Path = os.getcwd().split('dashboard_v1')[0]+'dashboard_v1\\data\\GA_2d.json'
-with open(GA_Path) as f:
-    GA_data = json.load(f)
+FL_data = json.load(open(os.getcwd().split('dashboard_v1')[0]+'dashboard_v1\\data\\facilityline_2d.json'))
+GA_data = json.load(open(os.getcwd().split('dashboard_v1')[0]+'dashboard_v1\\data\\GA_2d.json'))
+HR_data = json.load(open(os.getcwd().split('dashboard_v1')[0]+'dashboard_v1\\data\\haulroad_2d.json'))
+RA_data = json.load(open(os.getcwd().split('dashboard_v1')[0]+'dashboard_v1\\data\\roadaccess_2d.json'))
+TR_data = json.load(open(os.getcwd().split('dashboard_v1')[0]+'dashboard_v1\\data\\tempaccessroad_2d.json'))
+TC_data = json.load(open(os.getcwd().split('dashboard_v1')[0]+'dashboard_v1\\data\\transmissionline_chain_2d.json'))
+TL_data = json.load(open(os.getcwd().split('dashboard_v1')[0]+'dashboard_v1\\data\\transmissionline_line_2d.json'))
 
 st.header('Map of the Locations')
 col1, col2 = st.columns([3, 1])
@@ -35,20 +39,103 @@ names_on_map = col2.checkbox('Show Names', value=False)
 values_for_column_plot = col2.selectbox('Select the column for the column plot', [None]+list(numeric_df_norm.columns))
 
 # Define a GeoJSON layer
-geojson_layer = pdk.Layer(
-    'GeoJsonLayer',
-    data=GA_data,
-    pickable=True,
-    stroked=False,
-    filled=True,
-    extruded=False,
-    get_fill_color='[0, 0, 0, 200]',
-    get_line_color=[255, 0, 0],
-    get_radius=100,
-    opacity=1,
-    get_elevation=0,
-    get_line_width=1000
-)
+FL = pdk.Layer(
+                'GeoJsonLayer',
+                data=FL_data,
+                pickable=True,
+                stroked=True,
+                filled=False,
+                extruded=False,
+                get_fill_color='[0, 0, 0, 200]',
+                get_line_color=[255, 0, 0],
+                get_radius=100,
+                opacity=1,
+                get_elevation=0,
+                get_line_width=50)
+
+GA = pdk.Layer(
+                'GeoJsonLayer',
+                data=GA_data,
+                pickable=True,
+                stroked=True,
+                filled=False,
+                extruded=False,
+                get_fill_color='[0, 0, 0, 200]',
+                get_line_color=[0, 0, 0],
+                get_radius=100,
+                opacity=1,
+                get_elevation=0,
+                get_line_width=75)
+
+HR = pdk.Layer(
+                'GeoJsonLayer',
+                data=HR_data,
+                pickable=True,
+                stroked=True,
+                filled=False,
+                extruded=False,
+                get_fill_color='[0, 0, 0, 200]',
+                get_line_color=[255, 0, 0],
+                get_radius=100,
+                opacity=1,
+                get_elevation=0,
+                get_line_width=75)
+
+RA = pdk.Layer(
+                'GeoJsonLayer',
+                data=RA_data,
+                pickable=True,
+                stroked=True,
+                filled=False,
+                extruded=False,
+                get_fill_color='[0, 0, 0, 200]',
+                get_line_color=[255, 0, 0],
+                get_radius=100,
+                opacity=1,
+                get_elevation=0,
+                get_line_width=75)
+
+TR = pdk.Layer(
+                'GeoJsonLayer',
+                data=TR_data,
+                pickable=True,
+                stroked=True,
+                filled=False,
+                extruded=False,
+                get_fill_color='[0, 0, 0, 200]',
+                get_line_color=[255, 0, 0],
+                get_radius=100,
+                opacity=1,
+                get_elevation=0,
+                get_line_width=75)
+
+TC = pdk.Layer(
+                'GeoJsonLayer',
+                data=TC_data,
+                pickable=True,
+                stroked=True,
+                filled=False,
+                extruded=False,
+                get_fill_color='[0, 0, 0, 200]',
+                get_line_color=[255, 0, 0],
+                get_radius=100,
+                opacity=1,
+                get_elevation=0,
+                get_line_width=75)
+
+TL = pdk.Layer(
+                'GeoJsonLayer',
+                data=TL_data,
+                pickable=True,
+                stroked=True,
+                filled=False,
+                extruded=False,
+                get_fill_color='[0, 0, 0, 200]',
+                get_line_color=[0, 0, 0],
+                get_radius=100,
+                opacity=1,
+                get_elevation=0,
+                get_line_width=50)
 
 surface_layer = pdk.Layer(
     'ScatterplotLayer',
@@ -103,7 +190,7 @@ view_state = pdk.ViewState(
     zoom=10,
     pitch=50,
 )
-layers_to_plot = [geojson_layer]
+layers_to_plot = [FL,GA,HR,RA,TR,TL,TC]
 
 if surface_data:
     layers_to_plot.append(surface_layer)
