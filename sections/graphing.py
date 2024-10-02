@@ -1,6 +1,7 @@
 #%%
 import streamlit as st
-st. set_page_config(layout="wide")
+#st.set_page_config(layout="wide")
+
 import pandas as pd
 import plotly.express as px
 import os
@@ -27,7 +28,7 @@ start_date = col2.date_input('Start date', value=pd.to_datetime('2000-01-01'))
 end_date = col2.date_input('End date', value=pd.to_datetime('2023-12-31'))
 
 # Filter data based on date range
-data = data[(data['Date'] >= pd.to_datetime(start_date)) & (data['Date'] <= pd.to_datetime(end_date))]
+data = data[(data['Date'] >= pd.to_datetime(start_date)) & (data['Date'] <= pd.to_datetime(end_date))] # type: ignore
 
 y_element = col2.selectbox('Select the y-axis element:', data.columns)
 x_element = col2.selectbox('Select the x-axis element:', data.columns)

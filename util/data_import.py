@@ -41,9 +41,9 @@ def locations_to_pkl(loc_file: str,
     wq_dfs = []
     for data_file in data_files:
         wq = data_to_pkl(data_file,df_out=True)
-        cols = wq.select_dtypes(include=['number','datetime']).columns
+        cols = wq.select_dtypes(include=['number','datetime']).columns # type: ignore
         df[cols] = np.nan
-        wq = wq.sort_values('Date',ascending=False)
+        wq = wq.sort_values('Date',ascending=False) # type: ignore
         wq_dfs.append(wq)
     
     for wq in wq_dfs:

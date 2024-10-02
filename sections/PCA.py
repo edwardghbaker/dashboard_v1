@@ -1,6 +1,6 @@
 #%%
 import streamlit as st
-st.set_page_config(layout="wide")
+#st.set_page_config(layout="wide")
 from util.PCA_func import perform_pca
 import os
 import pandas as pd
@@ -34,7 +34,7 @@ if df is not None:
         components = list(set([i for i in df.columns if '(Dissolved)' in i]+list(df.columns)))
 
     num_pcs = st.number_input('Select the number of Principal Components to be calculated', min_value=1, max_value=len(components), value=3, step=1)
-    pcs = st.multiselect('Select Principal Components to be plotted', [i for i in range(1, num_pcs+1)])
+    pcs = st.multiselect('Select Principal Components to be plotted', [i for i in range(1, int(num_pcs)+1)])
 
     principal_df, vectors, X_recreated = perform_pca(df, components, pcs, plot=False)
 
