@@ -12,7 +12,6 @@ st.set_page_config(layout='wide')
 with open('user_details.yaml') as file:
     config = yaml.load(file, Loader=SafeLoader)
 
-
 # Pre-hashing all plain text passwords once
 # Hasher.hash_passwords(config['credentials'])
 
@@ -38,6 +37,7 @@ if st.session_state["authentication_status"]:
                         st.Page(r"sections\map.py",title='Map'),
                         st.Page(r"sections\graphing.py",title='Graph'),
                         st.Page(r"sections\PCA.py",title='PCA')])
+    
     st.sidebar.markdown("Knight Piesold's Data Explorer")
     st.sidebar.markdown("Edward Baker")
     pg.run()

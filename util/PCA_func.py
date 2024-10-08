@@ -66,7 +66,7 @@ if __name__ == '__main__':
     gwq_file = os.getcwd().split('dashboard_v1')[0]+'dashboard_v1\\data\\gwq.pkl'
     df = pd.read_pickle(gwq_file)
     components = df.select_dtypes(include=['number']).columns[1:]
-    perform_pca(df, components).show()
+    perform_pca(df, components)
     principal_df, vectors, X_recreated=perform_pca(df, components, plot=False)
     print('Principal components calculated successfully.')
 

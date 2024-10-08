@@ -10,7 +10,7 @@ credentials:
       first_name: John
       last_name: Smith
       logged_in: False # Will be managed automatically
-      password: abc # Will be hashed automatically
+      password: '$2b$12$CnEmCey4jEYT8xte22ip..qGO6r.pM0E6OuE8GhL14TWQC1p4.K9S' # abc # Will be hashed automatically
       roles: # Optional
       - admin
       - editor
@@ -21,7 +21,7 @@ credentials:
       first_name: Rebecca
       last_name: Briggs
       logged_in: False # Will be managed automatically
-      password: def # Will be hashed automatically
+      password: '$2b$12$5VZdBkqHIzjJs6tedAKRjOawi25HhjjWMnEpU1cigxcGD43AEaZU2' # def # Will be hashed automatically
       roles: # Optional
       - viewer
 oauth2: # Optional
