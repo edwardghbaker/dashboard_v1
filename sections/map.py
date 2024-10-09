@@ -6,6 +6,7 @@ import geopandas as gpd
 import os
 import pydeck as pdk
 import json
+import datetime as dt
 
 location_df = pd.read_pickle(os.getcwd().split('dashboard_v1')[0]+'dashboard_v1\\data\\locations.pkl')
 location_df.drop(10, inplace=True)
@@ -37,8 +38,14 @@ ground_data = col2.checkbox('Ground Water Data', value=True)
 col2.subheader('Settings')
 names_on_map = col2.checkbox('Show Names', value=False)
 values_for_column_plot = col2.selectbox('Select the column for the column plot', [None]+list(numeric_df_norm.columns))
+dates = col2.date_input(
+    "Select date range",
+    (dt.date(2000,1,1), dt.date(2023, 12, 31)),
+    None,
+    None,
+    format="DD.MM.YYYY")
 
-# Define a GeoJSON layer
+
 FL = pdk.Layer(
                 'GeoJsonLayer',
                 data=FL_data,
@@ -170,8 +177,13 @@ if names_on_map:
     )
 
 if values_for_column_plot:
+
+    # if dates is not None:
+    #     numeric_df_norm = numeric_df_norm[(numeric_df_norm.index >= dates[0]) & (numeric_df_norm.index <= dates[1])]
     column_df = numeric_df_norm[['lat', 'lon', values_for_column_plot]]
     column_df.columns = ['lat', 'lon', 'value']
+
+    
     
     barplot_layer = pdk.Layer(
         'ColumnLayer',
