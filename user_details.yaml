@@ -4,38 +4,38 @@ cookie:
   name: some_cookie_name
 credentials:
   usernames:
-    jsmith:
-      name: John Smith
-      email: jsmith@gmail.com
+    ebaker:
+      name: Edward Baker
+      email: ebaker@knightpiesold.com
       failed_login_attempts: 0 # Will be managed automatically
-      first_name: John
-      last_name: Smith
+      first_name: Edward
+      last_name: Baker
       logged_in: False # Will be managed automatically
       password: '$2b$12$CnEmCey4jEYT8xte22ip..qGO6r.pM0E6OuE8GhL14TWQC1p4.K9S' # abc # Will be hashed automatically
-      roles: # Optional
-      - admin
-      - editor
-      - viewer
-    rbriggs:
-      name: Rebecca Briggs
-      email: rbriggs@gmail.com
-      failed_login_attempts: 0 # Will be managed automatically
-      first_name: Rebecca
-      last_name: Briggs
-      logged_in: False # Will be managed automatically
-      password: '$2b$12$5VZdBkqHIzjJs6tedAKRjOawi25HhjjWMnEpU1cigxcGD43AEaZU2' # def # Will be hashed automatically
-      roles: # Optional
-      - viewer
-oauth2: # Optional
-  google: # Follow instructions: https://developers.google.com/identity/protocols/oauth2
-    client_id: # To be filled
-    client_secret: # To be filled
-    redirect_uri: # URL to redirect to after OAuth2 authentication
-  microsoft: # Follow instructions: https://learn.microsoft.com/en-us/graph/auth-register-app-v2
-    client_id: # To be filled
-    client_secret: # To be filled
-    redirect_uri: # URL to redirect to after OAuth2 authentication
-    tenant_id: # To be filled
-pre-authorized: # Optional
-  emails:
-  - melsby@gmail.com
+      # roles: # Optional
+      # - admin
+      # - editor
+      # - viewer
+#     rbriggs:
+#       name: Rebecca Briggs
+#       email: rbriggs@gmail.com
+#       failed_login_attempts: 0 # Will be managed automatically
+#       first_name: Rebecca
+#       last_name: Briggs
+#       logged_in: False # Will be managed automatically
+#       password: '$2b$12$5VZdBkqHIzjJs6tedAKRjOawi25HhjjWMnEpU1cigxcGD43AEaZU2' # def # Will be hashed automatically
+#       roles: # Optional
+#       - viewer
+# oauth2: # Optional
+#   google: # Follow instructions: https://developers.google.com/identity/protocols/oauth2
+#     client_id: # To be filled
+#     client_secret: # To be filled
+#     redirect_uri: # URL to redirect to after OAuth2 authentication
+#   microsoft: # Follow instructions: https://learn.microsoft.com/en-us/graph/auth-register-app-v2
+#     client_id: # To be filled
+#     client_secret: # To be filled
+#     redirect_uri: # URL to redirect to after OAuth2 authentication
+#     tenant_id: # To be filled
+# pre-authorized: # Optional
+#   emails:
+#   - melsby@gmail.com

@@ -1,5 +1,6 @@
 #%%
 from tkinter import font
+from turtle import ondrag
 from numpy import size
 import streamlit as st
 #st.set_page_config(layout="wide")
@@ -40,6 +41,7 @@ layer_expander.subheader('Facility Layers')
 facilities = layer_expander.checkbox('Facility Line', value=True)
 roads = layer_expander.checkbox('Roads', value=True)
 powerlines = layer_expander.checkbox('Powerlines', value=True)
+
 plotting_expander = col2.expander('Plotting Settings', expanded=False)
 value_for_column_plot = plotting_expander.selectbox('Select the analyte for plotting', [None]+[i for i in list(gwq.columns.intersection(swq.columns)) if i not in ['SITE ID', 'Date']])
 domain_radio = plotting_expander.radio('Select domian', ['Surface', 'Both', 'Ground'])
@@ -51,47 +53,50 @@ dates = plotting_expander.date_input(
     None,
     format="DD.MM.YYYY")
 
+timeseries_expander = col2.expander('Time Series Settings', expanded=False)
+# col2
+
 FL = pdk.Layer(
                 'GeoJsonLayer',
                 data=FL_data,
                 pickable=True,
                 stroked=True,
-                filled=False,
+                filled=True,
                 extruded=False,
-                get_fill_color='[0, 0, 0, 200]',
-                get_line_color=[255, 0, 0],
-                get_radius=100,
+                get_fill_color='[255,255,255, 255]',
+                get_line_color=[201, 144, 117],
+                get_radius=10,
                 opacity=1,
                 get_elevation=0,
-                get_line_width=50)
+                get_line_width=10) # Facilities Line
 
 GA = pdk.Layer(
                 'GeoJsonLayer',
                 data=GA_data,
-                pickable=True,
-                stroked=True,
-                filled=False,
+                # pickable=True,
+                # stroked=True,
+                filled=True,
                 extruded=False,
-                get_fill_color='[0, 0, 0, 200]',
-                get_line_color=[0, 0, 0],
-                get_radius=100,
+                get_fill_color='[161, 159, 159]',
+                get_line_color=[0,0,1],
+                get_radius=1,
                 opacity=1,
                 get_elevation=0,
-                get_line_width=75)
+                get_line_width=50) # General Arrangements 
+
 
 HR = pdk.Layer(
                 'GeoJsonLayer',
                 data=HR_data,
-                pickable=True,
-                stroked=True,
-                filled=False,
+                
+                filled=True,
                 extruded=False,
-                get_fill_color='[0, 0, 0, 200]',
-                get_line_color=[255, 0, 0],
-                get_radius=100,
+                get_fill_color='[255,255,255, 255]',
+                get_line_color=[201, 144, 117],
+                get_radius=10,
                 opacity=1,
                 get_elevation=0,
-                get_line_width=75)
+                get_line_width=10) # Haul Road
 
 RA = pdk.Layer(
                 'GeoJsonLayer',
@@ -100,12 +105,12 @@ RA = pdk.Layer(
                 stroked=True,
                 filled=False,
                 extruded=False,
-                get_fill_color='[0, 0, 0, 200]',
-                get_line_color=[255, 0, 0],
-                get_radius=100,
+                get_fill_color='[255,255,255, 255]',
+                get_line_color=[201, 144, 117],
+                get_radius=10,
                 opacity=1,
                 get_elevation=0,
-                get_line_width=75)
+                get_line_width=10) # Road Access
 
 TR = pdk.Layer(
                 'GeoJsonLayer',
@@ -114,12 +119,12 @@ TR = pdk.Layer(
                 stroked=True,
                 filled=False,
                 extruded=False,
-                get_fill_color='[0, 0, 0, 200]',
-                get_line_color=[255, 0, 0],
-                get_radius=100,
+                get_fill_color='[255,255,255, 255]',
+                get_line_color=[201, 144, 117],
+                get_radius=10,
                 opacity=1,
                 get_elevation=0,
-                get_line_width=75)
+                get_line_width=10) # Temporary Access Road
 
 TC = pdk.Layer(
                 'GeoJsonLayer',
@@ -129,11 +134,11 @@ TC = pdk.Layer(
                 filled=False,
                 extruded=False,
                 get_fill_color='[0, 0, 0, 200]',
-                get_line_color=[255, 0, 0],
-                get_radius=100,
+                get_line_color=[120, 28, 28],
+                get_radius=10,
                 opacity=1,
                 get_elevation=0,
-                get_line_width=75)
+                get_line_width=75) # Transmission Chain
 
 TL = pdk.Layer(
                 'GeoJsonLayer',
@@ -143,24 +148,24 @@ TL = pdk.Layer(
                 filled=False,
                 extruded=False,
                 get_fill_color='[0, 0, 0, 200]',
-                get_line_color=[0, 0, 0],
-                get_radius=100,
+                get_line_color=[120, 28, 28],
+                get_radius=10,
                 opacity=1,
                 get_elevation=0,
-                get_line_width=50)
+                get_line_width=10) # Transmission Line
 
 surface_layer = pdk.Layer(
     'ScatterplotLayer',
     data=location_df[location_df['Type'].str.contains('Surface')],
     get_position='[lon, lat]',
-    get_color='[200, 30, 0, 160]',
+    get_color='[115, 191, 48, 160]',
     get_radius=100,
 )
 ground_layer = pdk.Layer(
     'ScatterplotLayer',
     data=location_df[location_df['Type'].str.contains('Ground')],
     get_position='[lon, lat]',
-    get_color='[30, 200, 0, 160]',
+    get_color='[53, 48, 191, 160]',
     get_radius=100,
 )
 
@@ -208,6 +213,7 @@ if value_for_column_plot:
     
     barplot_layer = pdk.Layer(
         'ColumnLayer',
+        id='column-layer',
         data=column_df,
         get_position='[lon, lat]',
         get_elevation='value',
@@ -225,19 +231,16 @@ view_state = pdk.ViewState(
 )
 layers_to_plot = []
 
+if facilities:
+    layers_to_plot.append(GA)
 if roads:
     layers_to_plot.append(HR)
     layers_to_plot.append(RA)
     layers_to_plot.append(TR)
     layers_to_plot.append(FL)
-if facilities:
-    
-    layers_to_plot.append(GA)
-    
 if powerlines:
     layers_to_plot.append(TC)
     layers_to_plot.append(TL)
-
 
 if surface_data:
     layers_to_plot.append(surface_layer)
@@ -249,6 +252,6 @@ if value_for_column_plot:
     layers_to_plot.append(barplot_layer)
 
 # Render the deck.gl map with the GeoJSON layer
-col1.pydeck_chart(pdk.Deck(layers=layers_to_plot, initial_view_state=view_state, map_style='light'))
+col1.pydeck_chart(pdk.Deck(layers=layers_to_plot, initial_view_state=view_state, map_style='light', height=1400))
 
 # %%
