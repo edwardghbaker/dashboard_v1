@@ -1,4 +1,6 @@
 #%%
+from tkinter import font
+from numpy import size
 import streamlit as st
 #st.set_page_config(layout="wide")
 import pandas as pd
@@ -11,11 +13,9 @@ import datetime as dt
 location_df = pd.read_pickle(os.getcwd().split('dashboard_v1')[0]+'dashboard_v1\\data\\locations.pkl')
 location_df.drop(10, inplace=True)
 
-numeric_df = location_df.select_dtypes(include=['number'])
-numeric_df_norm = 1000*(numeric_df-numeric_df.min())/(numeric_df.max()-numeric_df.min())
-numeric_df_norm = numeric_df_norm.fillna(0)
-numeric_df_norm['lat'] = location_df['lat']
-numeric_df_norm['lon'] = location_df['lon']
+swq = pd.read_pickle(os.getcwd().split('dashboard_v1')[0]+'dashboard_v1\\data\\swq.pkl')
+gwq = pd.read_pickle(os.getcwd().split('dashboard_v1')[0]+'dashboard_v1\\data\\gwq.pkl')
+
 
 project_data = pd.DataFrame(columns=['lat', 'lon'],
                             data=[[-28.4359, -69.5486]])
@@ -28,19 +28,25 @@ TR_data = json.load(open(os.getcwd().split('dashboard_v1')[0]+'dashboard_v1\\dat
 TC_data = json.load(open(os.getcwd().split('dashboard_v1')[0]+'dashboard_v1\\data\\transmissionline_chain_2d.json'))
 TL_data = json.load(open(os.getcwd().split('dashboard_v1')[0]+'dashboard_v1\\data\\transmissionline_line_2d.json'))
 
-st.header('Map of the Locations')
-col1, col2 = st.columns([3, 1])
 
-col2.subheader('Layers')
-surface_data = col2.checkbox('Surface Water Data', value=True)
-ground_data = col2.checkbox('Ground Water Data', value=True)
+col1, col2 = st.columns([4, 1])
 
-col2.subheader('Settings')
-names_on_map = col2.checkbox('Show Names', value=False)
-values_for_column_plot = col2.selectbox('Select the column for the column plot', [None]+list(numeric_df_norm.columns))
-dates = col2.date_input(
+layer_expander = col2.expander('Map Layers', expanded=True)
+layer_expander.subheader('Data Layers')
+surface_data = layer_expander.checkbox('Surface Water Data', value=True)
+ground_data = layer_expander.checkbox('Ground Water Data', value=True)
+names_on_map = layer_expander.checkbox('Show Names', value=False)
+layer_expander.subheader('Facility Layers')
+facilities = layer_expander.checkbox('Facility Line', value=True)
+roads = layer_expander.checkbox('Roads', value=True)
+powerlines = layer_expander.checkbox('Powerlines', value=True)
+plotting_expander = col2.expander('Plotting Settings', expanded=False)
+value_for_column_plot = plotting_expander.selectbox('Select the analyte for plotting', [None]+[i for i in list(gwq.columns.intersection(swq.columns)) if i not in ['SITE ID', 'Date']])
+domain_radio = plotting_expander.radio('Select domian', ['Surface', 'Both', 'Ground'])
+result_radio = plotting_expander.radio('Select plotting stat', ['Mean', 'Median', 'Max'])
+dates = plotting_expander.date_input(
     "Select date range",
-    (dt.date(2000,1,1), dt.date(2023, 12, 31)),
+    (dt.date(1900,1,1), dt.date(2100, 12, 31)),
     None,
     None,
     format="DD.MM.YYYY")
@@ -176,14 +182,30 @@ if names_on_map:
         get_angle=0,
     )
 
-if values_for_column_plot:
+if value_for_column_plot:
 
-    # if dates is not None:
-    #     numeric_df_norm = numeric_df_norm[(numeric_df_norm.index >= dates[0]) & (numeric_df_norm.index <= dates[1])]
-    column_df = numeric_df_norm[['lat', 'lon', values_for_column_plot]]
-    column_df.columns = ['lat', 'lon', 'value']
-
+    #Get the dataset
+    if domain_radio == 'Surface':
+        df = swq
+    elif domain_radio == 'Ground':
+        df = gwq
+    else:
+        df = pd.concat([swq, gwq])
     
+    df = df[list(gwq.columns.intersection(swq.columns))] #Ensure only valid columns are present
+    df = df[(df['Date'] >= pd.to_datetime(dates[0])) & (df['Date'] <= pd.to_datetime(dates[1]))] #Filter by date # type: ignore
+    df = df.groupby('SITE ID').agg(result_radio.lower()) #Aggregate by result # type: ignore
+
+    #Only locations from correct dataset
+    location_df = location_df[location_df['Type'].str.contains(domain_radio)]
+
+    #Merge the data with the location data
+    column_df = location_df.merge(df, left_on='Name', right_on='SITE ID', how='left')
+
+    column_df = column_df[['lat', 'lon', value_for_column_plot]]
+    column_df.columns = ['lat', 'lon', 'value']
+    column_df['value'] = 1000*column_df['value']/column_df['value'].max()
+
     
     barplot_layer = pdk.Layer(
         'ColumnLayer',
@@ -202,7 +224,21 @@ view_state = pdk.ViewState(
     zoom=10,
     pitch=50,
 )
-layers_to_plot = [FL,GA,HR,RA,TR,TL,TC]
+layers_to_plot = []
+
+if roads:
+    layers_to_plot.append(HR)
+    layers_to_plot.append(RA)
+    layers_to_plot.append(TR)
+    layers_to_plot.append(FL)
+if facilities:
+    
+    layers_to_plot.append(GA)
+    
+if powerlines:
+    layers_to_plot.append(TC)
+    layers_to_plot.append(TL)
+
 
 if surface_data:
     layers_to_plot.append(surface_layer)
@@ -210,7 +246,7 @@ if ground_data:
     layers_to_plot.append(ground_layer)
 if names_on_map:
     layers_to_plot.append(name_layer)
-if values_for_column_plot:
+if value_for_column_plot:
     layers_to_plot.append(barplot_layer)
 
 # Render the deck.gl map with the GeoJSON layer

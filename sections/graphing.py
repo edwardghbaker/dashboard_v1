@@ -12,7 +12,7 @@ gwq = pd.read_pickle(os.getcwd().split('dashboard_v1')[0]+'dashboard_v1\\data\\g
 
 # %%
 
-st.title('Water Quality Dashboard')
+#st.title('Water Quality Dashboard')
 col1, col2 = st.columns([3, 1])
 
 #Make selector for the data
@@ -37,5 +37,5 @@ color_by = col2.selectbox('Select the color element:', [None]+list(data.columns)
 color_map = col2.selectbox('Select the color map:', px.colors.named_colorscales())
 size_by = col2.selectbox('Select the size element:', [None]+list(data.columns))
 
-col1.plotly_chart(px.scatter(data, x=x_element, y=y_element, color=color_by, size=size_by, color_continuous_scale=color_map), use_container_width=True)
+col1.plotly_chart(px.scatter(data, x=x_element, y=y_element, color=color_by, size=size_by, color_continuous_scale=color_map, height=700), use_container_width=True, )
 # %%

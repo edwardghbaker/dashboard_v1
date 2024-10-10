@@ -29,8 +29,7 @@ except LoginError as e:
     st.error(e)
 
 if st.session_state["authentication_status"]:
-    authenticator.logout()
-    st.write('___')
+
     st.sidebar.image(add_logo(logo_path=r"KP_stuff\KP-FullLogo-Colour-RGB.png")) 
 
     pg = st.navigation([st.Page(r"sections\home.py",title='Home'),
@@ -40,6 +39,9 @@ if st.session_state["authentication_status"]:
     
     st.sidebar.markdown("Knight Piesold's Data Explorer")
     st.sidebar.markdown("Edward Baker")
+    with st.sidebar:
+        st.write('___')
+        authenticator.logout()
     pg.run()
 elif st.session_state["authentication_status"] is False:
     st.error('Username/password is incorrect')

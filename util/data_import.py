@@ -29,8 +29,8 @@ def data_to_pkl(data_file, df_out=False):
     else:
         data.to_pickle(data_file.replace('.xls', '.pkl'))
 
-def locations_to_pkl(loc_file: str,
-                     data_files: list):
+def locations_to_pkl(loc_file: str):#,
+                     #data_files: list):
     df = pd.read_excel(loc_file,header=1)
     df[['UTM Easting','UTM Northing']] = df[['UTM Easting','UTM Northing']].map(lambda x: float(x.replace('E', '').replace('N','')))
     df = df[df['UTM Easting'] != 0]
@@ -38,21 +38,21 @@ def locations_to_pkl(loc_file: str,
     df['lat'] = [utm.to_latlon(i,j,19,'J')[0] for i,j in zip(df['UTM Easting'],df['UTM Northing'])]
     df['lon'] = [utm.to_latlon(i,j,19,'J')[1] for i,j in zip(df['UTM Easting'],df['UTM Northing'])]
     df['Last Sample'] = pd.to_datetime(df['Last Sample'])
-    wq_dfs = []
-    for data_file in data_files:
-        wq = data_to_pkl(data_file,df_out=True)
-        cols = wq.select_dtypes(include=['number','datetime']).columns # type: ignore
-        df[cols] = np.nan
-        wq = wq.sort_values('Date',ascending=False) # type: ignore
-        wq_dfs.append(wq)
+    # wq_dfs = []
+    # for data_file in data_files:
+    #     wq = data_to_pkl(data_file,df_out=True)
+    #     cols = wq.select_dtypes(include=['number','datetime']).columns # type: ignore
+    #     df[cols] = np.nan
+    #     wq = wq.sort_values('Date',ascending=False) # type: ignore
+    #     wq_dfs.append(wq)
     
-    for wq in wq_dfs:
-        for i in tqdm(range(len(df))):
-            for c in df.columns[14:]:
-                try:
-                    df.loc[i,c] = wq[wq['SITE ID']==df.loc[i,'Name']][c].iloc[0]
-                except:
-                    pass
+    # for wq in wq_dfs:
+    #     for i in tqdm(range(len(df))):
+    #         for c in df.columns[14:]:
+    #             try:
+    #                 df.loc[i,c] = wq[wq['SITE ID']==df.loc[i,'Name']][c].iloc[0]
+    #             except:
+    #                 pass
 
     df.to_pickle(loc_file.replace('.xlsx','.pkl'))
 
@@ -70,7 +70,7 @@ if __name__ == '__main__':
 
     location_data = os.getcwd().split('dashboard_v1')[0]+'dashboard_v1\\data\\locations.xlsx'
 
-    locations_to_pkl(location_data,
-                     data_files=[gwq,swq])
+    locations_to_pkl(location_data)
+                     #data_files=[gwq,swq])
     
 # %%
