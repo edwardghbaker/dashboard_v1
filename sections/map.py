@@ -51,7 +51,6 @@ dates = plotting_expander.date_input(
     None,
     format="DD.MM.YYYY")
 
-
 FL = pdk.Layer(
                 'GeoJsonLayer',
                 data=FL_data,
