@@ -16,7 +16,6 @@ location_df.drop(10, inplace=True)
 swq = pd.read_pickle(os.getcwd().split('dashboard_v1')[0]+'dashboard_v1\\data\\swq.pkl')
 gwq = pd.read_pickle(os.getcwd().split('dashboard_v1')[0]+'dashboard_v1\\data\\gwq.pkl')
 
-
 project_data = pd.DataFrame(columns=['lat', 'lon'],
                             data=[[-28.4359, -69.5486]])
 
@@ -40,17 +39,16 @@ layer_expander.subheader('Facility Layers')
 facilities = layer_expander.checkbox('Facility Line', value=True)
 roads = layer_expander.checkbox('Roads', value=True)
 powerlines = layer_expander.checkbox('Powerlines', value=True)
+
 plotting_expander = col2.expander('Plotting Settings', expanded=False)
 value_for_column_plot = plotting_expander.selectbox('Select the analyte for plotting', [None]+[i for i in list(gwq.columns.intersection(swq.columns)) if i not in ['SITE ID', 'Date']])
 domain_radio = plotting_expander.radio('Select domian', ['Surface', 'Both', 'Ground'])
 result_radio = plotting_expander.radio('Select plotting stat', ['Mean', 'Median', 'Max'])
-dates = plotting_expander.date_input(
-    "Select date range",
-    (dt.date(1900,1,1), dt.date(2100, 12, 31)),
-    None,
-    None,
-    format="DD.MM.YYYY")
-
+dates = plotting_expander.date_input("Select date range",
+                                     (dt.date(1900,1,1), dt.date(2100, 12, 31)),
+                                     None,
+                                     None,
+                                     format="DD.MM.YYYY")
 
 FL = pdk.Layer(
                 'GeoJsonLayer',
@@ -183,7 +181,6 @@ if names_on_map:
     )
 
 if value_for_column_plot:
-
     #Get the dataset
     if domain_radio == 'Surface':
         df = swq
@@ -238,7 +235,6 @@ if facilities:
 if powerlines:
     layers_to_plot.append(TC)
     layers_to_plot.append(TL)
-
 
 if surface_data:
     layers_to_plot.append(surface_layer)
