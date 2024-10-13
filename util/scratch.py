@@ -50,5 +50,3 @@ numeric_df_norm = 1000*(numeric_df-numeric_df.min())/(numeric_df.max()-numeric_d
 numeric_df_norm = numeric_df_norm.fillna(0)
 numeric_df_norm['lat'] = location_df['lat']
 numeric_df_norm['lon'] = location_df['lon']
-
-# %%

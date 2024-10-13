@@ -30,7 +30,7 @@ except LoginError as e:
 
 if st.session_state["authentication_status"]:
 
-    st.sidebar.image(add_logo(logo_path=r"KP_stuff\KP-FullLogo-Colour-RGB.png")) 
+    st.sidebar.image(add_logo(logo_path=r"KP_stuff\KP-FullLogo-Colour-RGB.png"),width=170) 
 
     pg = st.navigation([st.Page(r"sections\home.py",title='Home'),
                         st.Page(r"sections\map.py",title='Map'),
@@ -38,7 +38,7 @@ if st.session_state["authentication_status"]:
                         st.Page(r"sections\PCA.py",title='PCA')])
     
     st.sidebar.markdown("Knight Piesold's Data Explorer")
-    st.sidebar.markdown("Edward Baker")
+    #st.sidebar.markdown("Edward Baker")
     with st.sidebar:
         st.write('___')
         authenticator.logout()
