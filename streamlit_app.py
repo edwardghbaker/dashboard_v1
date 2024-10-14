@@ -8,7 +8,6 @@ from util.add_logo import add_logo
 
 st.set_page_config(layout='wide')
 
-
 with open('user_details.yaml') as file:
     config = yaml.load(file, Loader=SafeLoader)
 
