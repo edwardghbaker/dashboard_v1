@@ -47,8 +47,12 @@ def perform_pca(df,
     vectors = pd.DataFrame(data=pca.components_, columns=components, index=['PC{}'.format(i+1) for i in range(len(components))])
 
     # Recreate the original DataFrame
-    X_recreated = pca.inverse_transform(principal_components)
-    X_recreated = pd.DataFrame(data=X_recreated, columns=components)
+    X_r = pca.inverse_transform(principal_components)
+    if scale:
+        X_r = ss.inverse_transform(X_r)
+    X_recreated = pd.DataFrame(data = X_r, 
+                               columns = components, 
+                               index = df.index)
 
     if plot:
         # Plot the explained variance

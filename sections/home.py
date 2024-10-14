@@ -20,3 +20,5 @@ st.write('This is the home page of the Knight Piesold Data Explorer. Use the sid
 st.write('The Josemaria Project is located in the high-altitude Andean Cordillera between the Atacama Region of Chile and the San Juan and La Rioja provinces of Argentina. The Project consists of a conventional open pit with an ore processing facility processing mill feed at a nominal rate of 175,000 tonnes per day (tpd). A total of almost 1600 Mt of ore is planned for processing over the 25 year mine life, which will produce over 1570 Mt of tailings solids. ')
 
 st.write('The purporse of this data dashboard is to effectively communicate to steakholders, the environmental data KP and Deprominsa has collected')
+
+st.write('Questions, comments and improvements should be directed to: ebaker@knightpiesold.com')

@@ -58,6 +58,7 @@ timeseries_expander = col2.expander('Time Series Settings', expanded=False)
 FL = pdk.Layer(
                 'GeoJsonLayer',
                 data=FL_data,
+                id='facilityline-layer',
                 pickable=True,
                 stroked=True,
                 filled=True,
@@ -72,8 +73,7 @@ FL = pdk.Layer(
 GA = pdk.Layer(
                 'GeoJsonLayer',
                 data=GA_data,
-                # pickable=True,
-                # stroked=True,
+                id='generalarrangement-layer',
                 filled=True,
                 extruded=False,
                 get_fill_color='[161, 159, 159]',
@@ -83,11 +83,10 @@ GA = pdk.Layer(
                 get_elevation=0,
                 get_line_width=50) # General Arrangements 
 
-
 HR = pdk.Layer(
                 'GeoJsonLayer',
                 data=HR_data,
-                
+                id='haulroad-layer',
                 filled=True,
                 extruded=False,
                 get_fill_color='[255,255,255, 255]',
@@ -99,6 +98,7 @@ HR = pdk.Layer(
 
 RA = pdk.Layer(
                 'GeoJsonLayer',
+                id='roadaccess-layer',
                 data=RA_data,
                 pickable=True,
                 stroked=True,
@@ -114,6 +114,7 @@ RA = pdk.Layer(
 TR = pdk.Layer(
                 'GeoJsonLayer',
                 data=TR_data,
+                id='tempaccessroad-layer',
                 pickable=True,
                 stroked=True,
                 filled=False,
@@ -128,6 +129,7 @@ TR = pdk.Layer(
 TC = pdk.Layer(
                 'GeoJsonLayer',
                 data=TC_data,
+                id='transmissionchain-layer',
                 pickable=True,
                 stroked=True,
                 filled=False,
@@ -142,6 +144,7 @@ TC = pdk.Layer(
 TL = pdk.Layer(
                 'GeoJsonLayer',
                 data=TL_data,
+                id='transmission-line',
                 pickable=True,
                 stroked=True,
                 filled=False,
@@ -156,6 +159,7 @@ TL = pdk.Layer(
 surface_layer = pdk.Layer(
     'ScatterplotLayer',
     data=location_df[location_df['Type'].str.contains('Surface')],
+    id='surface-layer',
     get_position='[lon, lat]',
     get_color='[115, 191, 48, 160]',
     get_radius=100,
@@ -163,6 +167,7 @@ surface_layer = pdk.Layer(
 ground_layer = pdk.Layer(
     'ScatterplotLayer',
     data=location_df[location_df['Type'].str.contains('Ground')],
+    id='ground-layer',
     get_position='[lon, lat]',
     get_color='[53, 48, 191, 160]',
     get_radius=100,
@@ -178,6 +183,7 @@ if names_on_map:
     name_layer = pdk.Layer(
         'TextLayer',
         data=df_names,
+        id='text-layer',
         get_position='[lon, lat]',
         get_text='Name',
         get_size=12,
@@ -208,7 +214,6 @@ if value_for_column_plot:
     column_df.columns = ['lat', 'lon', 'value']
     column_df['value'] = 1000*column_df['value']/column_df['value'].max()
 
-    
     barplot_layer = pdk.Layer(
         'ColumnLayer',
         id='column-layer',
@@ -249,7 +254,20 @@ if names_on_map:
 if value_for_column_plot:
     layers_to_plot.append(barplot_layer)
 
+chart = pdk.Deck(
+                layers=layers_to_plot, 
+                initial_view_state=view_state, 
+                map_style='light', 
+                height=1400,
+                tooltip=True
+                )
+
 # Render the deck.gl map with the GeoJSON layer
-col1.pydeck_chart(pdk.Deck(layers=layers_to_plot, initial_view_state=view_state, map_style='light', height=1400))
+event = col1.pydeck_chart(chart, 
+                          use_container_width=True,
+                          on_select="rerun", 
+                          selection_mode="multi-object")
+
+event.values
 
 # %%

@@ -33,30 +33,32 @@ if df is not None:
 
     if 'All' in components:
         components.extend(list(df.columns))
-    elif 'Majors' in components:
+    
+    if 'Majors' in components:
         components.extend(['Total Dissolved Solids','Sulphate (Dissolved)','Redox Potential','Nitrate+Nitrite (Dissolved)','Magnesium (Dissolved)','Iron (Dissolved)', 'Hardness (Dissolved)','Copper (Dissolved)','Alkalinity, Carbonate as CaCO3','Arsenic (Dissolved)'])
-    elif 'Dissolved' in components:
+
+    if 'Dissolved' in components:
         components.extend([i for i in df.columns if '(Dissolved)' in i])
 
     components = list(set(components))
     components = [i for i in components if i in df.columns]
     
-    num_pcs = col2.number_input('Select the number of Principal Components to be calculated', min_value=1, max_value=len(components), value=3, step=1)
-    pcs = col2.multiselect('Select Principal Components to be plotted', [i for i in range(1, int(num_pcs)+1)])
+    #num_pcs = col2.number_input('Select the number of Principal Components to be returned', min_value=1, max_value=len(components), value=3, step=1)
+    pcs = col2.multiselect('Select Principal Components to be plotted', [f'PC{i}' for i in range(1, int(len(components))+1)])
 
     principal_df, vectors, X_recreated = perform_pca(df, components, pcs, plot=False)
 
     if len(pcs) == 1:
-        col1.plotly_chart(px.histogram(principal_df, x=f'PC{pcs[0]}'), use_container_width=True)
+        col1.plotly_chart(px.histogram(principal_df, x=pcs[0]), use_container_width=True)
     elif len(pcs) == 2:
-        col1.plotly_chart(px.scatter(principal_df, x=f'PC{pcs[0]}', y=f'PC{pcs[1]}'), use_container_width=True)
+        col1.plotly_chart(px.scatter(principal_df, x=pcs[0], y=pcs[1]), use_container_width=True)
     elif len(pcs) == 3:
-        col1.plotly_chart(px.scatter_3d(principal_df,x=f'PC{pcs[0]}', y=f'PC{pcs[1]}', z=f'PC{pcs[2]}'), use_container_width=True)
+        col1.plotly_chart(px.scatter_3d(principal_df,x=pcs[0], y=pcs[1], z=pcs[2]), use_container_width=True)
 
     st.write('---')
     st.write(pd.Series(components,name='Analyte'))
     st.write('---')
-    st.dataframe(df)
+    st.dataframe(df[components])
     st.dataframe(principal_df)
     st.dataframe(X_recreated)
     st.dataframe(vectors)
