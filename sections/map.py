@@ -1,4 +1,5 @@
 #%%
+from json import tool
 from tkinter import font
 from turtle import ondrag
 from numpy import size
@@ -10,6 +11,7 @@ import os
 import pydeck as pdk
 import json
 import datetime as dt
+import plotly.express as px
 
 location_df = pd.read_pickle(os.getcwd().split('dashboard_v1')[0]+'dashboard_v1\\data\\locations.pkl')
 location_df.drop(10, inplace=True)
@@ -195,8 +197,10 @@ if value_for_column_plot:
     #Get the dataset
     if domain_radio == 'Surface':
         df = swq
+        location_df = location_df[location_df['Type'].str.contains(domain_radio)]
     elif domain_radio == 'Ground':
         df = gwq
+        location_df = location_df[location_df['Type'].str.contains(domain_radio)]
     else:
         df = pd.concat([swq, gwq])
     
@@ -204,14 +208,11 @@ if value_for_column_plot:
     df = df[(df['Date'] >= pd.to_datetime(dates[0])) & (df['Date'] <= pd.to_datetime(dates[1]))] #Filter by date # type: ignore
     df = df.groupby('SITE ID').agg(result_radio.lower()) #Aggregate by result # type: ignore
 
-    #Only locations from correct dataset
-    location_df = location_df[location_df['Type'].str.contains(domain_radio)]
-
     #Merge the data with the location data
     column_df = location_df.merge(df, left_on='Name', right_on='SITE ID', how='left')
 
-    column_df = column_df[['lat', 'lon', value_for_column_plot]]
-    column_df.columns = ['lat', 'lon', 'value']
+    column_df = column_df[['Name','lat', 'lon', value_for_column_plot]]
+    column_df.columns = ['SITE ID','lat', 'lon', 'value']
     column_df['value'] = 1000*column_df['value']/column_df['value'].max()
 
     barplot_layer = pdk.Layer(
@@ -224,7 +225,16 @@ if value_for_column_plot:
         radius=100,
         pickable=True,
     )
-
+    scatter_layer = pdk.Layer(
+        'ScatterplotLayer',
+        data=column_df,
+        id='scatter-layer',
+        get_position='[lon, lat]',
+        get_color='[100, 200, 200, 255]',
+        get_radius='value',
+        pickable=True,
+        tooltip=True,
+    )
 # Define the view state
 view_state = pdk.ViewState(
     latitude=location_df['lat'].mean(),
@@ -244,7 +254,6 @@ if roads:
 if powerlines:
     layers_to_plot.append(TC)
     layers_to_plot.append(TL)
-
 if surface_data:
     layers_to_plot.append(surface_layer)
 if ground_data:
@@ -252,7 +261,7 @@ if ground_data:
 if names_on_map:
     layers_to_plot.append(name_layer)
 if value_for_column_plot:
-    layers_to_plot.append(barplot_layer)
+    layers_to_plot.append(scatter_layer)
 
 chart = pdk.Deck(
                 layers=layers_to_plot, 
@@ -268,6 +277,11 @@ event = col1.pydeck_chart(chart,
                           on_select="rerun", 
                           selection_mode="multi-object")
 
-event.values
+if event and value_for_column_plot:
+    idx_list = event.selection.get('indices').get('scatter-layer') # type: ignore
 
-# %%
+    quick_plot = px.scatter(swq.loc[swq['SITE ID'].isin(column_df.loc[idx_list,'SITE ID'])],
+                            x='Date',
+                            y=value_for_column_plot,
+                            color='SITE ID')
+    col1.plotly_chart(quick_plot)
